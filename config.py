@@ -30,6 +30,29 @@ class Development(BaseConfig):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
+class Test(BaseConfig):
+    """ Test config """
+
+    PORT = 5000
+    DEBUG = True
+    TESTING = True
+    ENV = 'test'
+    APPNAME = 'FizzBuzzBot_Test'
+
+    DB_HOST = 'localhost'
+    DB_USER = 'fizzbuzz'
+    DB_PASSWORD = 'f1zz$buzz'
+    DB_NAME = 'fizzbuzz_db_test'
+
+    SQLALCHEMY_DATABASE_URI = 'mysql://{user}:{pwd}@{host}/{db}'.format(
+        user=DB_USER,
+        pwd=DB_PASSWORD,
+        host=DB_HOST,
+        db=DB_NAME,
+    )
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+
 class Production(BaseConfig):
     """ Production config """
 
