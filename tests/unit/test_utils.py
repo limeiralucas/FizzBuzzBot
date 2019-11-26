@@ -21,8 +21,3 @@ def test_fizzbuzz_invalid_number():
 
     for number in test_cases:
         assert fizzbuzz(number) == number
-
-
-def test_fizzbuzz_invalid_param():
-    assert fizzbuzz('not a number') == 'not a number'
-    assert fizzbuzz('') == ''
