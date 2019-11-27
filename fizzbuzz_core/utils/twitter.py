@@ -10,6 +10,8 @@ authorize_url = 'https://api.twitter.com/oauth/authorize'
 
 
 def get_request_token():
+	consumer = oauth.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
+	client = oauth.Client(consumer)
     resp, content = client.request(request_token_url, "GET")
     if resp['status'] != '200':
         raise Exception("Invalid response {}".format(resp['status']))
