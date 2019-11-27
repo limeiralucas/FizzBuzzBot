@@ -1,18 +1,40 @@
+import requests
+import urllib
+import hmac
+import base64
 from flask import Blueprint, jsonify, request, current_app, redirect
 
 from fizzbuzz_core.data.models import db, Authentication
-from fizzbuzz_core.utils.twitter import get_request_token, get_twitter_auth_url, get_oauth_token, get_twitter_access_token
+from fizzbuzz_core.utils.twitter import Twitter
 
 auth = Blueprint('auth', __name__)
 
 
+@auth.route('/post', methods=['GET'])
+def post():
+    text = request.args.get('text')
+    url = 'https://api.twitter.com/1.1/statuses/update.json'
+
+    return {'status': 'ok'}
+
+
+@auth.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query', '')
+    result = Twitter.search(query)
+
+    return jsonify(result)
+
+
 @auth.route('/login', methods=['GET'])
 def login():
-    request_token = get_request_token()
-    url = get_twitter_auth_url(request_token)
+    twitter_client = Twitter(
+        current_app.config['TW_CONSUMER_KEY'], current_app.config['TW_CONSUMER_SECRET'])
 
-    new_auth = Authentication(
-        request_token['oauth_token'], request_token['oauth_token_secret'])
+    url = twitter_client.get_authorization_url()
+    request_token = twitter_client.get_request_token()
+
+    new_auth = Authentication(request_token)
     db.session.add(new_auth)
     db.session.commit()
 
@@ -21,45 +43,24 @@ def login():
 
 @auth.route('/twhook', methods=['GET'])
 def twitter_login_webhook():
-    oauth_request_token = request.args.get('oauth_token')
-    oauth_verifier = request.args.get('oauth_verifier')
+    request_token = request.args.get('oauth_token')
+    verifier = request.args.get('oauth_verifier')
 
     auth = Authentication.query.filter_by(
-        oauth_request_token=oauth_request_token).first()
+        request_token=request_token).first()
 
     if auth:
-        request_token = {
-            'oauth_token': oauth_request_token,
-            'oauth_token_secret': auth.oauth_request_token_secret,
-        }
+        twitter_client = Twitter(
+            current_app.config['TW_CONSUMER_KEY'], current_app.config['TW_CONSUMER_SECRET'])
 
-        token = get_oauth_token(request_token, oauth_verifier)
+        oauth_token, oauth_token_secret = twitter_client.get_access_token(
+            request_token, verifier)
 
-        try:
-            access_token = get_twitter_access_token(token)
-            auth.oauth_token = access_token['oauth_token']
-            auth.oauth_token_secret = access_token['oauth_token_secret']
-            db.session.commit()
+        auth.oauth_token = oauth_token
+        auth.oauth_token_secret = oauth_token_secret
 
-            print(access_token)
+        db.session.commit()
 
-            return jsonify({'status': 'ok'})
-        except:
-            return jsonify({'status': 'error retrieving access_token'})
+        return jsonify({'status': 'ok'})
 
     return jsonify({'status': 'error'})
-
-
-@auth.route('/webhook/twitter', methods=['GET'])
-def twitter_webhook():
-    # creates HMAC SHA-256 hash from incomming token and your consumer secret
-    sha256_hash_digest = hmac.new(TWITTER_CONSUMER_SECRET, msg=request.args.get(
-        'crc_token'), digestmod=hashlib.sha256).digest()
-
-    # construct response data with base64 encoded hash
-    response = {
-        'response_token': 'sha256=' + base64.b64encode(sha256_hash_digest)
-    }
-
-    # returns properly formatted json response
-    return json.dumps(response)

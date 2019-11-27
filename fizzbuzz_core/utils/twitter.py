@@ -1,45 +1,54 @@
 from flask import current_app
+from base64 import b64encode
+from datetime import datetime
 import oauth2 as oauth
 import urllib
-
-request_token_url = 'https://api.twitter.com/oauth/request_token'
-access_token_url = 'https://api.twitter.com/oauth/access_token'
-authorize_url = 'https://api.twitter.com/oauth/authorize'
+import requests
+import tweepy
 
 
-def get_request_token():
-    CONSUMER_KEY = current_app.config['TW_CONSUMER_KEY']
-    CONSUMER_SECRET = current_app.config['TW_CONSUMER_SECRET']
+class Twitter(object):
+    auth = None
 
-    consumer = oauth.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
-    client = oauth.Client(consumer)
-    resp, content = client.request(request_token_url, "GET")
-    if resp['status'] != '200':
-        raise Exception("Invalid response {}".format(resp['status']))
+    def __init__(self, consumer_key, consumer_secret):
+        self.auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 
-    return dict(urllib.parse.parse_qsl(content.decode("utf-8")))
+    def get_authorization_url(self):
+        try:
+            return self.auth.get_authorization_url()
+        except tweepy.TweepError:
+            print('Error! Failed to get auth url')
 
+    def get_request_token(self):
+        return self.auth.request_token['oauth_token']
 
-def get_twitter_auth_url(request_token):
-    return "{0}?oauth_token={1}".format(
-        authorize_url, request_token['oauth_token'])
+    def get_access_token(self, request_token, verifier):
+        self.auth.request_token = {
+            'oauth_token': request_token,
+            'oauth_token_secret': verifier
+        }
 
+        try:
+            self.auth.get_access_token(verifier)
 
-def get_oauth_token(request_token, oauth_verifier):
-    token = oauth.Token(request_token['oauth_token'],
-                        request_token['oauth_token_secret'])
-    token.set_verifier(oauth_verifier)
+            return self.auth.access_token, self.auth.access_token_secret
+        except tweepy.TweepError:
+            print('Error! Failed to get access token')
 
-    return token
+    def set_access_token(self, key, secret):
+        self.auth.set_access_token(key, secret)
 
+    def tweet(self, text=''):
+        api = tweepy.API(self.auth)
+        api.update_status('Please work!')
 
-def get_twitter_access_token(token):
-    CONSUMER_KEY = current_app.config['TW_CONSUMER_KEY']
-    CONSUMER_SECRET = current_app.config['TW_CONSUMER_SECRET']
+    @staticmethod
+    def search(query=''):
+        headers = {
+            'Authorization': 'Bearer {}'.format(current_app.config['TW_APP_BEARER'])
+        }
+        print(headers)
+        response = requests.get(
+            'https://api.twitter.com/1.1/search/tweets.json?q={}'.format(query), headers=headers)
 
-    consumer = oauth.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
-    client = oauth.Client(consumer, token)
-    _, content = client.request(access_token_url, "POST")
-    access_token = dict(urllib.parse.parse_qsl(content.decode("utf-8")))
-
-    return access_token
+        return response.json()

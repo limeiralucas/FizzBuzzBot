@@ -13,6 +13,7 @@ class BaseConfig(object):
 
     TW_CONSUMER_KEY = os.getenv('TW_CONSUMER_KEY')
     TW_CONSUMER_SECRET = os.getenv('TW_CONSUMER_SECRET')
+    TW_APP_BEARER = os.getenv('TW_APP_BEARER')
 
     DB_HOST = os.getenv('FZ_DB_HOST', 'localhost')
     DB_USER = os.getenv('FZ_DB_USER', 'fizzbuzz')
