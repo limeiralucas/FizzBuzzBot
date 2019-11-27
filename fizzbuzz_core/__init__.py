@@ -4,6 +4,7 @@ from flask import Flask
 from flask_cors import CORS
 
 from fizzbuzz_core.data.models import db
+from fizzbuzz_core.api.auth.controllers import auth
 from config import BaseConfig
 
 
@@ -22,5 +23,7 @@ def create_app(environment):
     app.url_map.strict_slashes = False
 
     db.init_app(app)
+
+    app.register_blueprint(auth, url_prefix='/')
 
     return app

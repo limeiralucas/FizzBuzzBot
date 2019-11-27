@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, current_app, redirect
 
 from fizzbuzz_core.utils.twitter import get_request_token, get_twitter_auth_url
 
-auth = Blueprint('user', __name__)
+auth = Blueprint('auth', __name__)
 
 
 @auth.route('/login', methods=['GET'])
