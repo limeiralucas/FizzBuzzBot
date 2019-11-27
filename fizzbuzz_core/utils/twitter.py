@@ -31,9 +31,8 @@ def get_oauth_token(request_token, oauth_verifier):
 
 
 def get_twitter_access_token(token):
-	consumer = oauth.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
+    consumer = oauth.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
     client = oauth.Client(consumer, token)
-
     resp, content = client.request(access_token_url, "POST")
     access_token = dict(urllib.parse.parse_qsl(content.decode("utf-8")))
 
