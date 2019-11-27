@@ -2,22 +2,27 @@ import os
 
 from flask import Flask
 from flask_cors import CORS
+from dotenv import load_dotenv
 
 from fizzbuzz_core.data.models import db
 from fizzbuzz_core.api.auth.controllers import auth
 from config import BaseConfig
 
 
-def create_app(environment):
+def create_app():
     app = Flask(__name__)
     env = os.getenv('ENV', 'development')
+    cwd = os.getcwd()
+    dotenv_path = os.path.join(cwd, '{}.env'.format(env))
+    if os.path.exists(dotenv_path):
+        load_dotenv(dotenv_path=dotenv_path)
 
-    app.config.from_object(environment.get(env))
+    app.config.from_object('config.{}Config'.format(env.capitalize()))
 
-    cors = CORS(app, resources={
+    CORS(app, resources={
         r'/api/*': {
-                'origins': BaseConfig.ORIGINS,
-                }
+            'origins': BaseConfig.ORIGINS,
+        }
     })
 
     app.url_map.strict_slashes = False

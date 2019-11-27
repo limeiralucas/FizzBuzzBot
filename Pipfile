@@ -5,6 +5,8 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
+pylint = "*"
+autopep8 = "*"
 
 [packages]
 flask = "*"
@@ -14,6 +16,7 @@ flask-cors = "*"
 flask-sqlalchemy = "*"
 mysqlclient = "*"
 oauth2 = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.7"

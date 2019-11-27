@@ -1,8 +1,6 @@
+from flask import current_app
 import oauth2 as oauth
 import urllib
-
-CONSUMER_KEY = 'V3l01bqEYX7z2nvZu4zAryQ6V'
-CONSUMER_SECRET = 'TU5BPg5nh5POuWydN12TiwQC2JmD7U5KEqOaIHMURE5eTWRHue'
 
 request_token_url = 'https://api.twitter.com/oauth/request_token'
 access_token_url = 'https://api.twitter.com/oauth/access_token'
@@ -10,6 +8,9 @@ authorize_url = 'https://api.twitter.com/oauth/authorize'
 
 
 def get_request_token():
+    CONSUMER_KEY = current_app.config['TW_CONSUMER_KEY']
+    CONSUMER_SECRET = current_app.config['TW_CONSUMER_SECRET']
+
     consumer = oauth.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
     client = oauth.Client(consumer)
     resp, content = client.request(request_token_url, "GET")
@@ -33,9 +34,12 @@ def get_oauth_token(request_token, oauth_verifier):
 
 
 def get_twitter_access_token(token):
+    CONSUMER_KEY = current_app.config['TW_CONSUMER_KEY']
+    CONSUMER_SECRET = current_app.config['TW_CONSUMER_SECRET']
+
     consumer = oauth.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
     client = oauth.Client(consumer, token)
-    resp, content = client.request(access_token_url, "POST")
+    _, content = client.request(access_token_url, "POST")
     access_token = dict(urllib.parse.parse_qsl(content.decode("utf-8")))
 
     return access_token
