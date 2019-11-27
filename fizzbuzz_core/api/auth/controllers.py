@@ -10,7 +10,7 @@ def login():
     request_token = get_request_token()
     url = get_twitter_auth_url(request_token)
 
-    redirect(url)
+    return redirect(url)
 
 
 @auth.route('/twhook', methods=['GET'])
