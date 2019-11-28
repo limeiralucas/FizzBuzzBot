@@ -1,4 +1,5 @@
 import re
+from redis import Redis
 from flask import current_app
 from celery.utils.log import get_task_logger
 
@@ -13,29 +14,26 @@ logger = get_task_logger(__name__)
 
 @celery.task(name="periodic_task")
 def answer_mentions():
-    logger.info("Hello! from periodic task")
     twitter_client = Twitter(
         current_app.config['TW_CONSUMER_KEY'], current_app.config['TW_CONSUMER_SECRET'])
 
-    auth = Authentication.query.order_by(Authentication.id.desc()).first()
-    twitter_client.set_access_token(auth.oauth_token, auth.oauth_token_secret)
+    twitter_client.set_access_token(
+        current_app.config['TW_OAUTH_TOKEN'], current_app.config['TW_OAUTH_TOKEN_SECRET'])
 
-    mentions = twitter_client.get_mentions()
-    answers = []
-    username = twitter_client.me.screen_name
-    for mention in mentions:
-        try:
+    redis_client = Redis(
+        current_app.config['REDIS_HOST'], port=6379, db=current_app.config['REDIS_DB'])
+
+    last_tweet_id = redis_client.get('last_tweet_id')
+
+    mentions = twitter_client.get_mentions(since_id=last_tweet_id)
+    if len(mentions) > 0:
+        redis_client.set('last_tweet_id', mentions[0].id)
+        for mention in mentions:
             text = re.sub(r'@[A-z0-9]+', '', mention.text).strip()
-            text = fizzbuzz(int(text))
+            try:
+                text = fizzbuzz(int(text))
 
-            answers.append({
-                'username': mention.user.screen_name,
-                'text': text,
-                'to': username,
-            })
-
-            twitter_client.tweet(
-                '@' + mention.user.screen_name + ' ' + text, in_reply_to=mention.id)
-        except ValueError:
-            print('Invalid number')
-    logger.info("Ended")
+                tweet = '@' + mention.user.screen_name + ' ' + str(text)
+                twitter_client.tweet(tweet, in_reply_to=mention.id)
+            except Exception:
+                twitter_client.tweet('Invalid number', in_reply_to=mention.id)

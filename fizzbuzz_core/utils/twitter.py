@@ -38,7 +38,7 @@ class Twitter(object):
     def set_access_token(self, key, secret):
         self.auth.set_access_token(key, secret)
 
-    def tweet(self, text='', in_reply_to=None):
+    def tweet(self, text, in_reply_to=None):
         api = tweepy.API(self.auth)
         response = api.update_status(text, in_reply_to_status_id=in_reply_to)
 

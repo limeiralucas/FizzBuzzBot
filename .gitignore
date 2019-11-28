@@ -2,3 +2,5 @@ Pipfile.lock
 *.env
 .vscode
 migrations/
+*.pid
+celerybeat-schedule

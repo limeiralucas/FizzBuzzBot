@@ -28,4 +28,4 @@ celery = create_celery(flask_app)
 
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(60, answer_mentions, name='answers mentions')
+    sender.add_periodic_task(30, answer_mentions, name='answers mentions')
