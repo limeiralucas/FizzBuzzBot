@@ -3,4 +3,5 @@ Pipfile.lock
 .vscode
 migrations/
 *.pid
+__pycache__/
 celerybeat-schedule
