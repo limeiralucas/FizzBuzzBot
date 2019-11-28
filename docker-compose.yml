@@ -1,0 +1,46 @@
+version: "3"
+services:
+  redis:
+    container_name: redis
+    image: redis:5
+    command: redis-server
+    ports:
+      - "6379:6379"
+    restart: always
+  mysql:
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=pwd
+      - MYSQL_USER=fizzbuzz
+      - MYSQL_PASSWORD=f1zzbuzz
+      - MYSQL_DATABASE=fizzbuzz_db
+
+  fizzbuzz-bot:
+    container_name: fizzbuzz-bot
+    image: python:3.7
+    depends_on:
+      - mysql
+      - redis
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/fizzbuzzbot
+    restart: always
+    command: >
+      bash -c "cd /fizzbuzzbot &&
+      rm -rf migrations &&
+      pip install --user pipenv &&
+      python -m pipenv install &&
+      python -m pipenv run python manage.py db init;
+      python -m pipenv run python manage.py db migrate &&
+      python -m pipenv run python manage.py db upgrade &&
+      python -m pipenv run celery -A celery_worker:celery worker --loglevel=INFO --detach &&
+      python -m pipenv run celery -A celery_worker:celery beat --loglevel=INFO --d &&
+      python -m pipenv run python app.py"

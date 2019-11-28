@@ -2,12 +2,11 @@ import pytest
 
 from fizzbuzz_core import create_app
 from fizzbuzz_core.data.models import db
-from app import config
 
 
 @pytest.fixture(scope='module')
 def test_client():
-    flask_app = create_app(config)
+    flask_app = create_app()
 
     testing_client = flask_app.test_client()
     ctx = flask_app.app_context()
