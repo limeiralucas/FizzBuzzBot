@@ -41,6 +41,6 @@ services:
       ls migrations || python manage.py db init &&
       python manage.py db migrate &&
       python manage.py db upgrade &&
-      celery -A celery_worker:celery worker --loglevel=INFO --detach &&
-      celery -A celery_worker:celery beat --loglevel=INFO --d &&
+      celery -A celery_worker:celery worker --loglevel=INFO --detach --pidfile= &&
+      celery -A celery_worker:celery beat --loglevel=INFO --d --pidfile= &&
       python app.py"
