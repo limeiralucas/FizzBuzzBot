@@ -36,11 +36,12 @@ services:
     command: >
       bash -c "cd /fizzbuzzbot &&
       rm -rf migrations &&
-      pip install --user pipenv &&
-      python -m pipenv install &&
-      python -m pipenv run python manage.py db init;
-      python -m pipenv run python manage.py db migrate &&
-      python -m pipenv run python manage.py db upgrade &&
-      python -m pipenv run celery -A celery_worker:celery worker --loglevel=INFO --detach &&
-      python -m pipenv run celery -A celery_worker:celery beat --loglevel=INFO --d &&
-      python -m pipenv run python app.py"
+      pip install pipenv &&
+      pipenv lock --requirements > requirements.txt &&
+      pip install -r requirements.txt &&
+      python manage.py db init;
+      python manage.py db migrate &&
+      python manage.py db upgrade &&
+      celery -A celery_worker:celery worker --loglevel=INFO --detach &&
+      celery -A celery_worker:celery beat --loglevel=INFO --d &&
+      python app.py"
