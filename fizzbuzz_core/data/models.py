@@ -15,16 +15,3 @@ class Interaction(db.Model):
         self.sender = sender
         self.message = message
         self.response = response
-
-
-class Authentication(db.Model):
-    """ Model representing authentication proccess """
-    id = db.Column(db.Integer, primary_key=True)
-    request_token = db.Column(db.String(64))
-    oauth_token = db.Column(db.String(64))
-    oauth_token_secret = db.Column(db.String(64))
-
-    def __init__(self, request_token, oauth_token='', oauth_token_secret=''):
-        self.request_token = request_token
-        self.oauth_token = oauth_token
-        self.oauth_token_secret = oauth_token_secret

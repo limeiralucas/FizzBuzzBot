@@ -35,6 +35,7 @@ services:
     restart: always
     command: >
       bash -c "cd /fizzbuzzbot &&
+      rm -rf migrations &&
       pip install --user pipenv &&
       python -m pipenv install &&
       python -m pipenv run python manage.py db init;

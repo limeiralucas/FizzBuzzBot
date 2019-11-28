@@ -4,7 +4,7 @@ from flask import current_app
 from celery.utils.log import get_task_logger
 
 from fizzbuzz_core import celery
-from fizzbuzz_core.data.models import Authentication
+from fizzbuzz_core.data.models import Interaction, db
 from fizzbuzz_core.utils import fizzbuzz
 from fizzbuzz_core.utils.twitter import Twitter
 
@@ -35,5 +35,10 @@ def answer_mentions():
 
                 tweet = '@' + mention.user.screen_name + ' ' + str(text)
                 twitter_client.tweet(tweet, in_reply_to=mention.id)
+
+                new_interaction = Interaction(
+                    mention.user.screen_name, mention.text, tweet)
+                db.session.add(new_interaction)
+                db.session.commit()
             except Exception:
                 twitter_client.tweet('Invalid number', in_reply_to=mention.id)

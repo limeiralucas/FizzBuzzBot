@@ -34,7 +34,4 @@ def create_app(**kwargs):
 
     db.init_app(app)
 
-    from fizzbuzz_core.api.auth.controllers import auth
-    app.register_blueprint(auth, url_prefix='/')
-
     return app
