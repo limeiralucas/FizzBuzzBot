@@ -10,14 +10,18 @@ def test_fizzbuzz():
     buzz to multiples of 5
     fizzbuzz to multiples of 3 and 5
     """
-    multi_3 = (3 * randrange(-1000, 1000))
-    multi_5 = (5 * randrange(-1000, 1000))
+    multi_3 = [-27, -12, -9, -3, 3, 9, 12, 27]
+    multi_5 = [-80, -35, -10, -5, 5, 10, 35, 80]
 
-    multi_both = (multi_3 * multi_5)
+    for number in multi_3:
+        assert fizzbuzz(number) == 'fizz'
 
-    assert fizzbuzz(multi_3) == 'fizz'
-    assert fizzbuzz(multi_5) == 'buzz'
-    assert fizzbuzz(multi_both) == 'fizzbuzz'
+    for number in multi_5:
+        assert fizzbuzz(number) == 'buzz'
+
+    for i in range(len(multi_3)):
+        number = multi_3[i] * multi_5[i]
+        assert fizzbuzz(number) == 'fizzbuzz'
 
 
 def test_fizzbuzz_invalid_number():
