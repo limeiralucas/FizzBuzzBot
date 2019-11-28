@@ -40,7 +40,21 @@ class Twitter(object):
 
     def tweet(self, text=''):
         api = tweepy.API(self.auth)
-        api.update_status('Please work!')
+        response = api.update_status('Please work!')
+
+        return response
+
+    def get_mentions(self, since_id=None):
+        api = tweepy.API(self.auth)
+        mentions_timeline = api.mentions_timeline(since_id=since_id)
+
+        return mentions_timeline
+
+    @property
+    def me(self):
+        api = tweepy.API(self.auth)
+
+        return api.me()
 
     @staticmethod
     def search(query=''):

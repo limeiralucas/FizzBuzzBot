@@ -2,20 +2,14 @@ import requests
 import urllib
 import hmac
 import base64
+import re
 from flask import Blueprint, jsonify, request, current_app, redirect
 
 from fizzbuzz_core.data.models import db, Authentication
 from fizzbuzz_core.utils.twitter import Twitter
+from fizzbuzz_core.utils import fizzbuzz
 
 auth = Blueprint('auth', __name__)
-
-
-@auth.route('/post', methods=['GET'])
-def post():
-    text = request.args.get('text')
-    url = 'https://api.twitter.com/1.1/statuses/update.json'
-
-    return {'status': 'ok'}
 
 
 @auth.route('/search', methods=['GET'])
@@ -75,7 +69,33 @@ def post_tweet():
 
     auth = Authentication.query.order_by(Authentication.id.desc()).first()
     twitter_client.set_access_token(auth.oauth_token, auth.oauth_token_secret)
-
     twitter_client.tweet(text)
 
-    return {'status': 'ok'}
+    return jsonify({'status': 'ok'})
+
+
+@auth.route('/mentions', methods=['GET'])
+def mentions():
+    twitter_client = Twitter(
+        current_app.config['TW_CONSUMER_KEY'], current_app.config['TW_CONSUMER_SECRET'])
+
+    auth = Authentication.query.order_by(Authentication.id.desc()).first()
+    twitter_client.set_access_token(auth.oauth_token, auth.oauth_token_secret)
+
+    mentions = twitter_client.get_mentions()
+    data = []
+    username = twitter_client.me.screen_name
+    for mention in mentions:
+        text = re.sub(r'@[A-z0-9]+', '', mention.text).strip()
+        try:
+            text = fizzbuzz(int(text))
+        except ValueError:
+            text = 'Invalid number'
+
+        data.append({
+            'username': mention.user.screen_name,
+            'text': text,
+            'to': username,
+        })
+
+    return jsonify(data)
