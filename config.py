@@ -17,7 +17,7 @@ class BaseConfig(object):
 
     DB_HOST = os.getenv('FZ_DB_HOST', 'localhost')
     DB_USER = os.getenv('FZ_DB_USER', 'fizzbuzz')
-    DB_PASSWORD = os.getenv('FZ_DB_PWD', 'f1zz$buzz')
+    DB_PASSWORD = os.getenv('FZ_DB_PWD', 'f1zzbuzz')
     DB_NAME = os.getenv('FZ_DB_NAME', 'fizzbuzz_db')
 
     SQLALCHEMY_DATABASE_URI = 'mysql://{user}:{pwd}@{host}/{db}'.format(
@@ -54,3 +54,4 @@ class ProductionConfig(BaseConfig):
     TESTING = False
     ENV = 'production'
     APPNAME = 'FizzBuzzBot'
+    DB_HOST = 'mysql'

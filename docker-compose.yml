@@ -1,0 +1,35 @@
+version: "3"
+services:
+  mysql:
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=pwd
+      - MYSQL_USER=fizzbuzz
+      - MYSQL_PASSWORD=f1zzbuzz
+      - MYSQL_DATABASE=fizzbuzz_db
+
+  fizzbuzz-bot:
+    container_name: fizzbuzz-bot
+    image: python:3.7
+    depends_on:
+      - mysql
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/fizzbuzzbot
+    restart: always
+    command: >
+      bash -c "cd /fizzbuzzbot &&
+      pip install --user pipenv &&
+      python -m pipenv install &&
+      python -m pipenv run python manage.py db init;
+      python -m pipenv run python manage.py db migrate &&
+      python -m pipenv run python manage.py db upgrade &&
+      python -m pipenv run python app.py"
