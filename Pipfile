@@ -19,6 +19,8 @@ oauth2 = "*"
 python-dotenv = "*"
 requests = "*"
 tweepy = "*"
+celery = "*"
+redis = "*"
 
 [requires]
 python_version = "3.7"

@@ -1,15 +1,19 @@
 import os
 
-from flask import Flask
+from flask import Flask, current_app
 from flask_cors import CORS
 from dotenv import load_dotenv
+from celery import Celery
 
+from flask import current_app
 from fizzbuzz_core.data.models import db
-from fizzbuzz_core.api.auth.controllers import auth
 from config import BaseConfig
 
 
-def create_app():
+celery = Celery()
+
+
+def create_app(**kwargs):
     app = Flask(__name__)
     env = os.getenv('ENV', 'development')
     cwd = os.getcwd()
@@ -18,6 +22,7 @@ def create_app():
         load_dotenv(dotenv_path=dotenv_path)
 
     app.config.from_object('config.{}Config'.format(env.capitalize()))
+    celery.config_from_object(app.config)
 
     CORS(app, resources={
         r'/api/*': {
@@ -29,6 +34,7 @@ def create_app():
 
     db.init_app(app)
 
+    from fizzbuzz_core.api.auth.controllers import auth
     app.register_blueprint(auth, url_prefix='/')
 
     return app

@@ -79,8 +79,11 @@ def mentions():
     twitter_client = Twitter(
         current_app.config['TW_CONSUMER_KEY'], current_app.config['TW_CONSUMER_SECRET'])
 
-    auth = Authentication.query.order_by(Authentication.id.desc()).first()
-    twitter_client.set_access_token(auth.oauth_token, auth.oauth_token_secret)
+    # auth = Authentication.query.order_by(Authentication.id.desc()).first()
+    # twitter_client.set_access_token(auth.oauth_token, auth.oauth_token_secret)
+
+    twitter_client.set_access_token(
+        '56196120-iDw4aQhGCe73Tdg7eQ9AYYCWIALSeAiyg374Nwz9O', 'm3MLpnPp9yCXrD4JKcf9XH4Yw5ma90DgraHEudCr0rhvR')
 
     mentions = twitter_client.get_mentions()
     data = []
@@ -93,6 +96,7 @@ def mentions():
             text = 'Invalid number'
 
         data.append({
+            'id': mention.id,
             'username': mention.user.screen_name,
             'text': text,
             'to': username,

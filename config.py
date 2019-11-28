@@ -28,6 +28,10 @@ class BaseConfig(object):
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+    BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_SEND_TASK_SENT_EVENT = True
+
 
 class DevelopmentConfig(BaseConfig):
     """ Development config """
@@ -54,4 +58,3 @@ class ProductionConfig(BaseConfig):
     TESTING = False
     ENV = 'production'
     APPNAME = 'FizzBuzzBot'
-    DB_HOST = 'mysql'
