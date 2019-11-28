@@ -13,7 +13,6 @@ class BaseConfig(object):
 
     TW_CONSUMER_KEY = os.getenv('TW_CONSUMER_KEY')
     TW_CONSUMER_SECRET = os.getenv('TW_CONSUMER_SECRET')
-    TW_APP_BEARER = os.getenv('TW_APP_BEARER')
 
     TW_OAUTH_TOKEN = os.getenv('TW_OAUTH_TOKEN')
     TW_OAUTH_TOKEN_SECRET = os.getenv('TW_OAUTH_TOKEN_SECRET')

@@ -55,14 +55,3 @@ class Twitter(object):
         api = tweepy.API(self.auth)
 
         return api.me()
-
-    @staticmethod
-    def search(query=''):
-        headers = {
-            'Authorization': 'Bearer {}'.format(current_app.config['TW_APP_BEARER'])
-        }
-        print(headers)
-        response = requests.get(
-            'https://api.twitter.com/1.1/search/tweets.json?q={}'.format(query), headers=headers)
-
-        return response.json()
