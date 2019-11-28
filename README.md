@@ -34,3 +34,11 @@ REDIS_DB="0"
 ```
 docker-compose up
 ```
+
+### How to use
+
+#### Just tweet a mention to the profile you used on bot configuration with a number. You can test it right now tweet to @FizzBuzzBot1
+
+```
+@FizzBuzzBot1 15
+```
