@@ -13,7 +13,7 @@ def create_app():
     app = Flask(__name__)
     env = os.getenv('ENV', 'development')
     cwd = os.getcwd()
-    dotenv_path = os.path.join(cwd, '{}.env'.format(env))
+    dotenv_path = os.path.join(cwd, '.env')
     if os.path.exists(dotenv_path):
         load_dotenv(dotenv_path=dotenv_path)
 
