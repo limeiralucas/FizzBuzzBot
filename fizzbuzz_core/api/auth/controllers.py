@@ -64,3 +64,18 @@ def twitter_login_webhook():
         return jsonify({'status': 'ok'})
 
     return jsonify({'status': 'error'})
+
+
+@auth.route('/post', methods=['GET'])
+def post_tweet():
+    text = request.args.get('text')
+
+    twitter_client = Twitter(
+        current_app.config['TW_CONSUMER_KEY'], current_app.config['TW_CONSUMER_SECRET'])
+
+    auth = Authentication.query.order_by(Authentication.id.desc()).first()
+    twitter_client.set_access_token(auth.oauth_token, auth.oauth_token_secret)
+
+    twitter_client.tweet(text)
+
+    return {'status': 'ok'}
