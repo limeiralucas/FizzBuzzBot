@@ -15,7 +15,7 @@ httplib2==0.14.0
 idna==2.8
 importlib-metadata==0.23
 itsdangerous==1.1.0
-jinja2==2.10.3
+jinja2==2.11.3
 kombu==4.6.6
 mako==1.1.0
 markupsafe==1.1.1
